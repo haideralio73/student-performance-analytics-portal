@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Login / Register</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: system-ui, sans-serif; background:#bbb; padding:20px; }
+  h2.section-title { text-align:center; color:#333; margin:10px 0; font-size:14px; text-transform:uppercase; letter-spacing:1px; }
+  .frames { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; }
+
+  /* ── Desktop frame ── */
+  .desktop { width:900px; background:#fff; border:2px solid #666; }
+  .desktop .screen { display:flex; min-height:600px; }
+  .desktop .left  { flex:1; background:#ddd; display:flex; align-items:center; justify-content:center; }
+  .desktop .right { flex:1; display:flex; align-items:center; justify-content:center; }
+  .card { width:340px; background:#eee; border:2px solid #999; padding:30px; }
+  .card h3 { font-size:18px; color:#333; text-align:center; margin-bottom:20px; }
+  .field { margin-bottom:14px; }
+  .field .lbl { font-size:11px; color:#555; margin-bottom:4px; }
+  .field .inp { width:100%; height:36px; border:2px solid #999; background:#fff; display:flex; align-items:center; padding-left:10px; font-size:12px; color:#888; }
+  .btn { width:100%; height:40px; border:2px solid #555; background:#ccc; color:#333; font-size:13px; font-weight:600; text-align:center; line-height:36px; margin-top:8px; }
+  .link { text-align:center; font-size:11px; color:#666; margin-top:12px; border-bottom:1px solid #666; display:inline-block; width:100%; padding-bottom:2px; }
+
+  /* ── Mobile frame ── */
+  .mobile { width:375px; background:#fff; border:2px solid #666; }
+  .mobile .screen { min-height:600px; background:#ddd; display:flex; align-items:center; justify-content:center; }
+  .mobile .card { width:300px; padding:24px; }
+  .mobile .card h3 { font-size:16px; margin-bottom:16px; }
+  .mobile .field .inp { height:40px; }
+  .mobile .btn { height:44px; line-height:40px; }
+
+  .brand { text-align:center; font-size:13px; color:#444; margin-bottom:16px; font-weight:600; }
+  .tabs { display:flex; border:2px solid #999; margin-bottom:16px; }
+  .tabs div { flex:1; text-align:center; padding:8px 0; font-size:12px; color:#555; }
+  .tabs .active { background:#ccc; font-weight:600; color:#222; }
+  .role-sel { margin-bottom:14px; }
+  .role-sel .lbl { font-size:11px; color:#555; margin-bottom:4px; }
+  .role-sel select { width:100%; height:36px; border:2px solid #999; background:#fff; font-size:12px; color:#555; padding:0 8px; }
+</style>
+</head>
+<body>
+
+<h2 class="section-title">Login / Register — Desktop</h2>
+<div class="frames">
+<div class="desktop">
+<div class="screen">
+  <div class="left">
+    <div style="text-align:center; color:#777; font-size:13px;">[Branding / Hero]</div>
+  </div>
+  <div class="right">
+    <div class="card">
+      <div class="brand">SPAP Portal</div>
+      <div class="tabs">
+        <div class="active">Sign In</div>
+        <div>Register</div>
+      </div>
+      <div class="field">
+        <div class="lbl">Email</div>
+        <div class="inp">email@example.com</div>
+      </div>
+      <div class="field">
+        <div class="lbl">Password</div>
+        <div class="inp">········</div>
+      </div>
+      <div class="btn">Sign In</div>
+      <div class="link">Don't have an account? Register</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<h2 class="section-title">Register — Mobile</h2>
+<div class="frames">
+<div class="mobile">
+<div class="screen">
+  <div class="card">
+    <div class="brand">SPAP Portal</div>
+    <div class="tabs">
+      <div>Sign In</div>
+      <div class="active">Register</div>
+    </div>
+    <div class="field">
+      <div class="lbl">Full Name</div>
+      <div class="inp">Your name</div>
+    </div>
+    <div class="field">
+      <div class="lbl">Email</div>
+      <div class="inp">email@example.com</div>
+    </div>
+    <div class="field">
+      <div class="lbl">Password</div>
+      <div class="inp">········</div>
+    </div>
+    <div class="role-sel">
+      <div class="lbl">Role</div>
+      <select><option>Student</option><option>Teacher</option><option>Admin</option></select>
+    </div>
+    <div class="btn">Create Account</div>
+    <div class="link">Already have an account? Sign in</div>
+  </div>
+</div>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe — Admin Dashboard</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: system-ui, sans-serif; background:#bbb; padding:20px; }
+  h2.section-title { text-align:center; color:#333; margin:10px 0; font-size:14px; text-transform:uppercase; letter-spacing:1px; }
+  .frames { display:flex; justify-content:center; gap:40px; flex-wrap:wrap; }
+
+  .desktop { width:960px; background:#fff; border:2px solid #666; }
+  .desktop .screen { display:flex; min-height:600px; }
+  .desktop .sidebar { width:56px; background:#ddd; border-right:2px solid #999; padding:12px 0; }
+  .desktop .sidebar .nav { width:32px; height:32px; background:#ccc; border:1px solid #999; margin:0 auto 8px auto; }
+  .desktop .sidebar .nav.active { background:#aaa; border-color:#666; }
+  .desktop .main { flex:1; display:flex; flex-direction:column; }
+  .desktop .topbar { height:48px; background:#ddd; border-bottom:2px solid #999; display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
+  .desktop .topbar .title { font-size:14px; font-weight:600; color:#333; }
+  .desktop .topbar .user { width:32px; height:32px; border:2px solid #999; background:#ccc; border-radius:50%; }
+  .desktop .content { flex:1; padding:20px; overflow-y:auto; }
+
+  .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .card-sm { border:2px solid #999; background:#eee; padding:14px; }
+  .card-sm .card-icon { width:32px; height:32px; border:2px solid #aaa; background:#ddd; margin-bottom:8px; }
+  .card-sm .card-val { font-size:20px; font-weight:700; color:#333; }
+  .card-sm .card-lbl { font-size:11px; color:#666; }
+
+  .section-hd { font-size:12px; font-weight:600; color:#444; margin-bottom:8px; border-bottom:1px solid #ccc; padding-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
+  .lnk { font-size:11px; color:#666; border-bottom:1px solid #999; }
+
+  .tbl-box { border:2px solid #999; background:#eee; padding:14px; margin-bottom:16px; }
+  .tbl { width:100%; border-collapse:collapse; }
+  .tbl th, .tbl td { border:1px solid #bbb; padding:6px 8px; font-size:11px; color:#555; text-align:left; }
+  .tbl th { background:#ddd; font-weight:600; color:#444; }
+  .tbl .tag { display:inline-block; border:1px solid #aaa; background:#ddd; padding:0 6px; font-size:10px; }
+  .btn-sm { border:1px solid #999; background:#ddd; padding:2px 8px; font-size:10px; color:#555; display:inline-block; }
+
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .chart-box { border:2px solid #999; background:#eee; padding:14px; min-height:160px; }
+  .chart-box .ch-title { font-size:12px; font-weight:600; color:#444; margin-bottom:6px; }
+  .chart-placeholder { height:100px; background:#ddd; border:1px dashed #999; display:flex; align-items:center; justify-content:center; font-size:12px; color:#777; }
+
+  /* ── Mobile ── */
+  .mobile { width:375px; background:#fff; border:2px solid #666; }
+  .mobile .screen { min-height:700px; display:flex; flex-direction:column; }
+  .mobile .topbar { height:44px; background:#ddd; border-bottom:2px solid #999; display:flex; align-items:center; justify-content:space-between; padding:0 12px; flex-shrink:0; }
+  .mobile .topbar .hamb { width:24px; height:24px; border:2px solid #999; background:#ccc; }
+  .mobile .topbar .title { font-size:13px; font-weight:600; color:#333; }
+  .mobile .topbar .user { width:28px; height:28px; border:2px solid #999; background:#ccc; border-radius:50%; }
+  .mobile .content { flex:1; padding:10px; overflow-y:auto; }
+  .mobile .cards { grid-template-columns:repeat(2,1fr); gap:8px; }
+  .mobile .row2 { grid-template-columns:1fr; }
+  .mobile .chart-placeholder { height:90px; }
+  .mobile .bottom-nav { height:44px; background:#ddd; border-top:2px solid #999; display:flex; flex-shrink:0; }
+  .mobile .bottom-nav div { flex:1; border-right:1px solid #bbb; display:flex; align-items:center; justify-content:center; font-size:10px; color:#555; }
+  .mobile .bottom-nav div.active { background:#ccc; font-weight:600; }
+</style>
+</head>
+<body>
+
+<h2 class="section-title">Admin Dashboard — Desktop</h2>
+<div class="frames">
+<div class="desktop">
+<div class="screen">
+  <div class="sidebar">
+    <div class="nav active"></div><div class="nav"></div><div class="nav"></div><div class="nav"></div><div class="nav"></div><div class="nav"></div>
+  </div>
+  <div class="main">
+    <div class="topbar"><div class="title">Admin Dashboard</div><div class="user"></div></div>
+    <div class="content">
+      <div class="cards">
+        <div class="card-sm"><div class="card-icon"></div><div class="card-val">1,204</div><div class="card-lbl">Total Users</div></div>
+        <div class="card-sm"><div class="card-icon"></div><div class="card-val">48</div><div class="card-lbl">Courses</div></div>
+        <div class="card-sm"><div class="card-icon"></div><div class="card-val">76.8%</div><div class="card-lbl">Overall Avg</div></div>
+        <div class="card-sm"><div class="card-icon"></div><div class="card-val">84.2%</div><div class="card-lbl">Attendance Rate</div></div>
+      </div>
+
+      <div class="section-hd"><span>User Management</span><span class="lnk">+ Add User</span></div>
+      <div class="tbl-box">
+        <table class="tbl">
+          <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr>
+          <tr><td>Aisha Khan</td><td>aisha@uni.edu</td><td><span class="tag">Student</span></td><td>Active</td><td><span class="btn-sm">Edit</span></td></tr>
+          <tr><td>Dr. Marcus Rivera</td><td>m.rivera@uni.edu</td><td><span class="tag">Teacher</span></td><td>Active</td><td><span class="btn-sm">Edit</span></td></tr>
+          <tr><td>Priya Sharma</td><td>p.sharma@uni.edu</td><td><span class="tag">Admin</span></td><td>Active</td><td><span class="btn-sm">Edit</span></td></tr>
+          <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        </table>
+      </div>
+
+      <div class="section-hd"><span>System Analytics Overview</span><span class="lnk">View All</span></div>
+      <div class="row2">
+        <div class="chart-box">
+          <div class="ch-title">Grade Distribution — All Courses</div>
+          <div class="chart-placeholder">[Chart: Stacked Bar — by Course]</div>
+        </div>
+        <div class="chart-box">
+          <div class="ch-title">Enrollment — by Programme</div>
+          <div class="chart-placeholder">[Chart: Pie — CS / Math / Physics / ...]</div>
+        </div>
+      </div>
+
+      <div class="section-hd" style="margin-top:16px;"><span>Course Management</span><span class="lnk">+ Add Course</span></div>
+      <div class="tbl-box">
+        <table class="tbl">
+          <tr><th>Code</th><th>Name</th><th>Teacher</th><th>Students</th><th>Term</th><th></th></tr>
+          <tr><td>CS-201</td><td>Data Structures</td><td>Dr. Rivera</td><td>32</td><td>Spring 2026</td><td><span class="btn-sm">Edit</span></td></tr>
+          <tr><td>MTH-102</td><td>Linear Algebra</td><td>Dr. Rivera</td><td>28</td><td>Spring 2026</td><td><span class="btn-sm">Edit</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<h2 class="section-title">Admin Dashboard — Mobile</h2>
+<div class="frames">
+<div class="mobile">
+<div class="screen">
+  <div class="topbar"><div class="hamb"></div><div class="title">Admin</div><div class="user"></div></div>
+  <div class="content">
+    <div class="cards">
+      <div class="card-sm"><div class="card-icon"></div><div class="card-val">1,204</div><div class="card-lbl">Users</div></div>
+      <div class="card-sm"><div class="card-icon"></div><div class="card-val">48</div><div class="card-lbl">Courses</div></div>
+      <div class="card-sm"><div class="card-icon"></div><div class="card-val">76.8%</div><div class="card-lbl">Avg Score</div></div>
+      <div class="card-sm"><div class="card-icon"></div><div class="card-val">84.2%</div><div class="card-lbl">Att. Rate</div></div>
+    </div>
+    <div class="section-hd"><span>Users</span><span class="lnk">+ Add</span></div>
+    <div class="tbl-box">
+      <table class="tbl">
+        <tr><th>Name</th><th>Role</th><th></th></tr>
+        <tr><td>Aisha Khan</td><td><span class="tag">Student</span></td><td><span class="btn-sm">Edit</span></td></tr>
+        <tr><td>Dr. Rivera</td><td><span class="tag">Teacher</span></td><td><span class="btn-sm">Edit</span></td></tr>
+        <tr><td>Priya Sharma</td><td><span class="tag">Admin</span></td><td><span class="btn-sm">Edit</span></td></tr>
+      </table>
+    </div>
+    <div class="section-hd"><span>Analytics</span></div>
+    <div class="row2">
+      <div class="chart-box">
+        <div class="ch-title">Grade Distribution</div>
+        <div class="chart-placeholder">[Chart: Bar]</div>
+      </div>
+      <div class="chart-box">
+        <div class="ch-title">Enrollment</div>
+        <div class="chart-placeholder">[Chart: Pie]</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="active">Home</div><div>Users</div><div>Courses</div><div>Reports</div>
+  </div>
+</div>
+</div>
+</div>
+
+</body>
+</html>
