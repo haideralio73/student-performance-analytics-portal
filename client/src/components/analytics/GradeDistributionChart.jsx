@@ -1,34 +1,49 @@
 /**
- * components/analytics/GradeDistributionChart.jsx — Grade distribution pie chart.
- *
- * Uses Recharts to render a pie chart showing the breakdown
- * of grades (A/B/C/D/F) across all or filtered assessments.
+ * components/analytics/GradeDistributionChart.jsx — Grade distribution bar chart.
+ * Shows A/B/C/D/F count across all assessments.
  */
 
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-const COLORS = ['#22c55e', '#3b82f6', '#eab308', '#f97316', '#ef4444'];
-const LABELS = ['A', 'B', 'C', 'D', 'F'];
+const GRADE_COLORS = { A: '#10b981', B: '#3b82f6', C: '#f59e0b', D: '#f97316', F: '#ef4444' };
 
-export default function GradeDistributionChart({ distribution }) {
-  const data = distribution
-    ? Object.entries(distribution).map(([key, value]) => ({ name: key, value }))
-    : LABELS.map((label) => ({ name: label, value: 0 }));
+export default function GradeDistributionChart({ grades = [] }) {
+  if (!grades.length) {
+    return (
+      <div className="h-full flex items-center justify-center text-gray-600 text-sm">
+        No grade data
+      </div>
+    );
+  }
+
+  const dist = { A: 0, B: 0, C: 0, D: 0, F: 0 };
+  grades.forEach((g) => {
+    const pct = (g.score / g.maxScore) * 100;
+    if (pct >= 90) dist.A++;
+    else if (pct >= 80) dist.B++;
+    else if (pct >= 70) dist.C++;
+    else if (pct >= 60) dist.D++;
+    else dist.F++;
+  });
+
+  const data = Object.entries(dist).map(([letter, count]) => ({ letter, count }));
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">Grade Distribution</h3>
-      <ResponsiveContainer width="100%" height={250}>
-        <PieChart>
-          <Pie data={data} cx="50%" cy="50%" outerRadius={80} dataKey="value" label>
-            {data.map((_, i) => (
-              <Cell key={i} fill={COLORS[i % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+        <XAxis dataKey="letter" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false} />
+        <YAxis allowDecimals={false} tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={false} tickLine={false} />
+        <Tooltip
+          contentStyle={{ background: '#111827', border: '1px solid #374151', borderRadius: '12px', color: '#f3f4f6', fontSize: '12px' }}
+          formatter={(value, name) => [`${value} assessments`, `Grade ${name}`]}
+        />
+        <Bar dataKey="count" radius={[6, 6, 0, 0]} barSize={48}>
+          {data.map((entry, i) => (
+            <Cell key={i} fill={GRADE_COLORS[entry.letter] || '#6b7280'} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   );
 }
