@@ -2,6 +2,7 @@
   "name": "student-performance-server",
   "version": "1.0.0",
   "description": "Backend API for Student Performance Analytics Portal",
+  "type": "module",
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
