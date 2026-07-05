@@ -38,8 +38,10 @@ export const IconAnalytics = ({ className = base }) => (
 );
 
 export const IconUsers = ({ className = base }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
   </svg>
 );
 
@@ -126,20 +128,15 @@ export const IconX = ({ className = base }) => (
 /**
  * Logo — SPAP brand mark.
  * A graduation cap combined with an analytics chart motif.
+ * Uses a flat fill (no gradient ID) to avoid collision when rendered in multiple places.
  */
 export const Logo = ({ className = "w-10 h-10" }) => (
   <svg className={className} viewBox="0 0 48 48" fill="none">
-    <defs>
-      <linearGradient id="logoGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#3B82F6" />
-        <stop offset="1" stopColor="#6366F1" />
-      </linearGradient>
-    </defs>
-    <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#logoGrad)" />
+    <rect x="4" y="4" width="40" height="40" rx="12" fill="#3B82F6" />
     <path d="M14 32V20l10-6 10 6v12" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
     <path d="M24 14L14 20l10 6 10-6-10-6z" fill="white" opacity="0.9" />
-    <rect x="20" y="28" width="4" height="7" rx="1" fill="white" opacity="0.7" />
-    <rect x="26" y="24" width="4" height="11" rx="1" fill="white" opacity="0.9" />
-    <rect x="14" y="30" width="4" height="5" rx="1" fill="white" opacity="0.5" />
+    <rect x="19" y="27" width="5" height="8" rx="1" fill="white" opacity="0.7" />
+    <rect x="26" y="23" width="5" height="12" rx="1" fill="white" opacity="0.9" />
+    <rect x="12" y="29" width="5" height="6" rx="1" fill="white" opacity="0.5" />
   </svg>
 );
