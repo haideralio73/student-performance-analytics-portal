@@ -1,7 +1,6 @@
 /**
  * hooks/useFetch.js — Generic data-fetching hook with loading/error state.
- *
- * Wraps axios GET calls and returns { data, loading, error, refetch }.
+ * Unwraps the { success, data } envelope from the backend.
  */
 
 import { useState, useEffect, useCallback } from 'react';
@@ -14,10 +13,10 @@ export const useFetch = (url, deps = []) => {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await api.get(url);
       setData(res.data);
-      setError(null);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
     } finally {
@@ -27,7 +26,6 @@ export const useFetch = (url, deps = []) => {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchData, ...deps]);
 
   return { data, loading, error, refetch: fetchData };

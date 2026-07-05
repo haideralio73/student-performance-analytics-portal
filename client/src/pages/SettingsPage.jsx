@@ -1,16 +1,36 @@
 /**
- * pages/SettingsPage.jsx — User settings page.
- *
- * Placeholder for profile editing, password change,
- * notification preferences, and theme toggling.
+ * pages/SettingsPage.jsx — Settings page placeholder.
  */
 
+import { useAuth } from '../hooks/useAuth';
+
 export default function SettingsPage() {
+  const { user } = useAuth();
+
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Settings</h2>
-      <div className="bg-white rounded-lg shadow p-6 text-gray-500">
-        Settings form placeholder — profile editing, password change, and preferences go here.
+      <h2 className="text-lg font-semibold text-white mb-6">Settings</h2>
+      <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Name</label>
+            <div className="text-white">{user?.name}</div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Email</label>
+            <div className="text-white">{user?.email}</div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Role</label>
+            <div className="text-white capitalize">{user?.role}</div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Member Since</label>
+            <div className="text-white text-sm">
+              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '---'}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

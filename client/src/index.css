@@ -3,5 +3,27 @@
 @tailwind utilities;
 
 /**
- * index.css — Global styles and Tailwind directives.
+ * index.css — Global styles.
+ * Dark theme base for the SPAP portal.
  */
+
+body {
+  @apply bg-gray-900 text-gray-100;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
+}
