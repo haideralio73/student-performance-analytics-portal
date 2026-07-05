@@ -1,61 +1,65 @@
 /**
- * pages/AttendancePage.jsx — Attendance viewing page.
+ * pages/AttendancePage.jsx — Attendance records with role-based display.
  */
 
+import { useAuth } from '../hooks/useAuth';
 import { useFetch } from '../hooks/useFetch';
+import { IconAttendance } from '../components/shared/Icons';
 
-const statusStyles = {
-  present: 'bg-green-900/50 text-green-300',
-  absent: 'bg-red-900/50 text-red-300',
-  late: 'bg-amber-900/50 text-amber-300',
-  excused: 'bg-blue-900/50 text-blue-300',
+const statusStyle = {
+  present: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  absent: 'bg-red-500/10 text-red-400 border-red-500/20',
+  late: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  excused: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
 };
 
 export default function AttendancePage() {
+  const { user } = useAuth();
   const { data, loading } = useFetch('/attendance');
   const records = Array.isArray(data) ? data : [];
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-white mb-6">
-        Attendance
-        <span className="ml-2 text-sm font-normal text-gray-400">({records.length} records)</span>
-      </h2>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <div className="w-11 h-11 rounded-xl bg-emerald-600/20 flex items-center justify-center">
+          <IconAttendance className="w-5.5 h-5.5 text-emerald-400" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-white tracking-tight">
+            {user?.role === 'student' ? 'My Attendance' : 'Attendance Records'}
+          </h2>
+          <p className="text-xs text-gray-500 mt-0.5">{records.length} records</p>
+        </div>
+      </div>
 
       {loading ? (
-        <div className="flex justify-center py-16">
-          <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-500 border-t-transparent"></div>
-        </div>
+        <div className="flex justify-center py-20"><svg className="animate-spin w-8 h-8 text-blue-500" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg></div>
       ) : records.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <p className="text-sm">No attendance records found.</p>
+        <div className="text-center py-20 bg-gray-900 rounded-2xl border border-gray-800/80">
+          <IconAttendance className="w-14 h-14 text-gray-800 mx-auto mb-4" />
+          <h3 className="text-white font-semibold mb-1">No attendance records</h3>
+          <p className="text-gray-500 text-sm">Attendance data will appear once teachers begin marking sessions.</p>
         </div>
       ) : (
-        <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+        <div className="bg-gray-900 rounded-2xl border border-gray-800/80 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-700 text-gray-400 text-xs uppercase tracking-wider">
-                <th className="text-left px-5 py-3 font-medium">Date</th>
-                <th className="text-left px-5 py-3 font-medium">Subject</th>
-                <th className="text-left px-5 py-3 font-medium">Status</th>
-                <th className="text-left px-5 py-3 font-medium">Marked By</th>
+              <tr className="border-b border-gray-800/50 bg-gray-950/50 text-gray-500 text-xs uppercase tracking-wider">
+                <th className="text-left px-6 py-4 font-medium">Date</th>
+                <th className="text-left px-6 py-4 font-medium">Subject</th>
+                <th className="text-left px-6 py-4 font-medium">Status</th>
+                <th className="text-right px-6 py-4 font-medium">Marked By</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-700/50">
+            <tbody className="divide-y divide-gray-800/30">
               {records.map((r) => (
-                <tr key={r._id} className="hover:bg-gray-700/30">
-                  <td className="px-5 py-3 text-white text-xs font-mono">
-                    {r.date ? new Date(r.date).toLocaleDateString() : '---'}
+                <tr key={r._id} className="hover:bg-gray-800/40 transition-colors">
+                  <td className="px-6 py-4 text-white font-mono text-xs">{r.date ? new Date(r.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '---'}</td>
+                  <td className="px-6 py-4 text-gray-400">{r.subject}</td>
+                  <td className="px-6 py-4">
+                    <span className={`text-[10px] font-medium px-2.5 py-1 rounded-lg border capitalize ${statusStyle[r.status] || statusStyle.present}`}>{r.status}</span>
                   </td>
-                  <td className="px-5 py-3 text-gray-400">{r.subject}</td>
-                  <td className="px-5 py-3">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${statusStyles[r.status] || statusStyles.present}`}>
-                      {r.status}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-gray-500 text-xs">
-                    {r.markedBy?.name || '---'}
-                  </td>
+                  <td className="px-6 py-4 text-gray-500 text-xs text-right">{r.markedBy?.name || '---'}</td>
                 </tr>
               ))}
             </tbody>
