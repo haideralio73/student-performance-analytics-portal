@@ -17,7 +17,7 @@ export const getGrades = async (req, res, next) => {
     const filter = {};
 
     if (req.user.role === 'student') {
-      filter.student = req.user.id;
+      filter.student = req.query.student || req.user.id;
     } else {
       if (req.query.student) filter.student = req.query.student;
     }

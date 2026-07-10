@@ -3,19 +3,38 @@
  *
  * Enforces row-level access control:
  * - Students can only access their own grades, attendance, and analytics.
- *   The `student` query parameter is forced to their own user ID.
- * - Teachers can only access data for courses they own. Write operations
- *   verify course ownership before allowing mutation.
+ * - Teachers can only access data for courses they own.
  * - Admins bypass all scoping — they see everything.
  */
 
+import mongoose from 'mongoose';
+
 /**
- * Forces the `student` query param to req.user.id for student-role users.
+ * Resolves User ID -> Student profile ObjectId for accurate queries.
+ * Grades and attendance reference the Student collection, not User.
+ */
+async function getStudentProfileId(userId) {
+  try {
+    const profile = await mongoose.connection.db
+      .collection('students')
+      .findOne(
+        { user: new mongoose.Types.ObjectId(userId) },
+        { projection: { _id: 1 } }
+      );
+    return profile?._id;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Forces the `student` query param to the student's Student-profile ObjectId.
  * Use before any GET endpoint that accepts a ?student filter.
  */
-export const scopeStudentRead = (req, _res, next) => {
+export const scopeStudentRead = async (req, _res, next) => {
   if (req.user.role === 'student') {
-    req.query.student = req.user.id;
+    const profileId = await getStudentProfileId(req.user.id);
+    req.query.student = profileId ? profileId.toString() : req.user.id;
   }
   next();
 };
@@ -54,11 +73,9 @@ export const verifyTeacherCourse = async (req, _res, next) => {
   }
 
   try {
-    const mongoose = (await import('mongoose')).default;
-    const db = mongoose.connection.db;
-    const course = await db.collection('courses').findOne({
-      _id: new mongoose.Types.ObjectId(courseId),
+    const course = await mongoose.connection.db.collection('courses').findOne({
       teacher: req.user.id,
+      _id: new mongoose.Types.ObjectId(courseId),
     });
 
     if (!course) {
@@ -85,12 +102,9 @@ export const verifyStudentInTeachersCourse = async (req, _res, next) => {
   if (!courseId || !studentId) return next();
 
   try {
-    const mongoose = (await import('mongoose')).default;
-    const db = mongoose.connection.db;
-
-    const course = await db.collection('courses').findOne({
-      _id: new mongoose.Types.ObjectId(courseId),
+    const course = await mongoose.connection.db.collection('courses').findOne({
       teacher: req.user.id,
+      _id: new mongoose.Types.ObjectId(courseId),
     });
 
     if (!course) {
