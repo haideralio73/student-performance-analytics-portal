@@ -1,8 +1,5 @@
 /**
  * routes/studentRoutes.js — Student profile route definitions.
- *
- * CRUD endpoints for student records. Admins/teachers can manage
- * all profiles; students can only view their own.
  */
 
 import { Router } from 'express';
@@ -22,7 +19,7 @@ router.use(protect);
 
 router
   .route('/')
-  .get(authorize('admin', 'teacher'), getStudents)
+  .get(getStudents)
   .post(authorize('admin'), createStudent);
 
 router
