@@ -29,7 +29,15 @@ export default function GradeTrendChart({ grades = [] }) {
         <XAxis dataKey="name" tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={{ stroke: '#374151' }} tickLine={false} />
         <YAxis domain={[0, 100]} tick={{ fill: '#9ca3af', fontSize: 11 }} axisLine={{ stroke: '#374151' }} tickLine={false} />
         <Tooltip
-          contentStyle={{ background: '#111827', border: '1px solid #374151', borderRadius: '12px', color: '#f3f4f6', fontSize: '12px' }}
+          cursor={{ stroke: '#374151', strokeDasharray: '4 4' }}
+          contentStyle={{
+            background: '#1f2937',
+            border: '1px solid #374151',
+            borderRadius: '10px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+          }}
+          labelStyle={{ color: '#d1d5db', fontWeight: 600, fontSize: 13, marginBottom: 4 }}
+          itemStyle={{ color: '#e5e7eb', fontSize: 12, padding: '2px 0' }}
           formatter={(value) => [`${value}%`, 'Score']}
         />
         <Line type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={2.5} dot={{ fill: '#3b82f6', r: 4 }} activeDot={{ r: 6, fill: '#60a5fa' }} />
