@@ -5,6 +5,8 @@
 import { useAuth } from '../hooks/useAuth';
 import { useFetch } from '../hooks/useFetch';
 import { IconAttendance } from '../components/shared/Icons';
+import toast from 'react-hot-toast';
+import api from '../services/api';
 
 const statusStyle = {
   present: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -18,6 +20,21 @@ export default function AttendancePage() {
   const { data, loading } = useFetch('/attendance');
   const records = Array.isArray(data) ? data : [];
 
+  const exportCSV = async () => {
+    try {
+      const res = await api.get('/export/attendance/csv', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `attendance-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('CSV downloaded');
+    } catch { toast.error('Export failed'); }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -30,6 +47,9 @@ export default function AttendancePage() {
           </h2>
           <p className="text-xs text-gray-500 mt-0.5">{records.length} records</p>
         </div>
+        <button onClick={exportCSV} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-sm font-medium rounded-xl transition-all">
+          Export CSV
+        </button>
       </div>
 
       {loading ? (

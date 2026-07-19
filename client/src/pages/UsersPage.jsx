@@ -4,10 +4,24 @@
 
 import { useFetch } from '../hooks/useFetch';
 import { IconUsers } from '../components/shared/Icons';
+import toast from 'react-hot-toast';
+import api from '../services/api';
 
 export default function UsersPage() {
   const { data, loading } = useFetch('/users');
   const users = Array.isArray(data) ? data : [];
+
+  const exportCSV = async () => {
+    try {
+      const r = await api.get('/export/users/csv', { responseType: 'blob' });
+      const u = window.URL.createObjectURL(new Blob([r.data]));
+      const l = document.createElement('a');
+      l.href = u; l.setAttribute('download', 'users.csv');
+      document.body.appendChild(l); l.click(); l.remove();
+      window.URL.revokeObjectURL(u);
+      toast.success('CSV downloaded');
+    } catch { toast.error('Export failed'); }
+  };
 
   const roleBadge = (role) => {
     const s = { admin: 'bg-red-500/10 text-red-400 border-red-500/20', teacher: 'bg-blue-500/10 text-blue-400 border-blue-500/20', student: 'bg-green-500/10 text-green-400 border-green-500/20' };
@@ -28,6 +42,7 @@ export default function UsersPage() {
           <h2 className="text-xl font-bold text-white tracking-tight">User Management</h2>
           <p className="text-xs text-gray-500 mt-0.5">{users.length} registered users</p>
         </div>
+        <button onClick={exportCSV} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-sm font-medium rounded-xl transition-all">Export CSV</button>
       </div>
 
       <div className="grid grid-cols-3 gap-4">

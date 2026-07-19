@@ -111,11 +111,14 @@ export default function StudentsPage() {
             <p className="text-xs text-gray-500 mt-0.5">{students.length} students enrolled</p>
           </div>
         </div>
-        {isAdmin && (
-          <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20">
-            <IconPlus className="w-4 h-4" /> Add Student
-          </button>
-        )}
+        <div className="flex gap-2">
+          <button onClick={async () => { try { const r = await api.get('/export/students/csv', { responseType: 'blob' }); const u = window.URL.createObjectURL(new Blob([r.data])); const l = document.createElement('a'); l.href = u; l.setAttribute('download', 'students.csv'); document.body.appendChild(l); l.click(); l.remove(); window.URL.revokeObjectURL(u); toast.success('CSV downloaded'); } catch { toast.error('Export failed'); } }} className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-xs font-medium rounded-xl transition-all">Export CSV</button>
+          {isAdmin && (
+            <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20">
+              <IconPlus className="w-4 h-4" /> Add Student
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
