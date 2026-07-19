@@ -168,12 +168,12 @@ export default function StudentsPage() {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowModal(false)}>
-          <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-md shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="px-6 py-5 border-b border-gray-800/50 flex items-center justify-between">
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-5 border-b border-gray-800/50 flex items-center justify-between flex-shrink-0">
               <h3 className="text-white font-semibold text-lg">{editing ? 'Edit Student' : 'New Student'}</h3>
               <button onClick={() => setShowModal(false)} className="p-1.5 hover:bg-gray-800 rounded-lg transition-colors text-gray-500 hover:text-white"><IconX className="w-5 h-5" /></button>
             </div>
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-shrink">
               {!editing && (
                 <div>
                   <div className="flex items-center gap-3 mb-3">
