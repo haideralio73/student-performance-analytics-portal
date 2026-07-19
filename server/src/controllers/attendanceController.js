@@ -22,7 +22,14 @@ export const getAttendance = async (req, res, next) => {
     }
 
     if (req.query.subject) filter.subject = req.query.subject;
-    if (req.query.status) filter.status = req.query.status;
+    if (req.query.status) {
+      filter.status = req.query.status.includes(',')
+        ? { $in: req.query.status.split(',') }
+        : req.query.status;
+    }
+    if (req.query.search) {
+      filter.subject = new RegExp(req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    }
     if (req.query.date) filter.date = new Date(req.query.date);
     if (req.query.dateFrom || req.query.dateTo) {
       filter.date = {};

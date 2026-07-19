@@ -24,7 +24,22 @@ export const getGrades = async (req, res, next) => {
 
     if (req.query.subject) filter.subject = req.query.subject;
     if (req.query.term) filter.term = req.query.term;
-    if (req.query.assessmentType) filter.assessmentType = req.query.assessmentType;
+    if (req.query.assessmentType) {
+      filter.assessmentType = req.query.assessmentType.includes(',')
+        ? { $in: req.query.assessmentType.split(',') }
+        : req.query.assessmentType;
+    }
+    if (req.query.search) {
+      filter.$or = [
+        { subject: new RegExp(req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') },
+        { assessmentName: new RegExp(req.query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') },
+      ];
+    }
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.date = {};
+      if (req.query.dateFrom) filter.date.$gte = new Date(req.query.dateFrom);
+      if (req.query.dateTo) filter.date.$lte = new Date(req.query.dateTo);
+    }
 
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || PAGE_SIZE));

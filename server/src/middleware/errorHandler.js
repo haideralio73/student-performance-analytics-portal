@@ -1,14 +1,13 @@
 /**
  * middleware/errorHandler.js — Centralized error-handling middleware.
  *
- * Catches all errors forwarded via next(err) and returns a
- * consistent JSON error response to the client.
+ * Catches all errors forwarded via next(err), logs them via Winston,
+ * and returns a consistent JSON error response.
  */
 
-// eslint-disable-next-line no-unused-vars
-const errorHandler = (err, _req, res, _next) => {
-  console.error(err.stack);
+import logger from '../config/logger.js';
 
+const errorHandler = (err, req, res, _next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Internal Server Error';
   const errors = [];
@@ -30,6 +29,23 @@ const errorHandler = (err, _req, res, _next) => {
     const field = Object.keys(err.keyValue)[0];
     message = `Duplicate value for '${field}'. This record already exists.`;
   }
+
+  if (err.name === 'JsonWebTokenError') {
+    statusCode = 401;
+    message = 'Invalid token';
+  }
+
+  if (err.name === 'TokenExpiredError') {
+    statusCode = 401;
+    message = 'Token has expired';
+  }
+
+  logger.error(`${req.method} ${req.originalUrl} — ${statusCode} ${message}`, {
+    stack: err.stack,
+    statusCode,
+    method: req.method,
+    url: req.originalUrl,
+  });
 
   res.status(statusCode).json({
     success: false,
