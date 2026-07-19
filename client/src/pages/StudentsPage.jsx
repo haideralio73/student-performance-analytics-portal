@@ -19,6 +19,10 @@ export default function StudentsPage() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ user: '', studentId: '', programme: '', enrollmentYear: new Date().getFullYear() });
   const [submitting, setSubmitting] = useState(false);
+  const [useExistingUser, setUseExistingUser] = useState(true);
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserEmail, setNewUserEmail] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
 
   const fetchStudents = async () => {
     try { setLoading(true); const data = await getStudents(); setStudents(Array.isArray(data) ? data : []); }
@@ -42,6 +46,8 @@ export default function StudentsPage() {
   const openCreate = () => {
     setEditing(null);
     setForm({ user: '', studentId: '', programme: '', enrollmentYear: new Date().getFullYear() });
+    setNewUserName(''); setNewUserEmail(''); setNewUserPassword('');
+    setUseExistingUser(true);
     fetchAvailableUsers();
     setShowModal(true);
   };
@@ -60,11 +66,31 @@ export default function StudentsPage() {
   const handleSubmit = async (e) => {
     e.preventDefault(); setSubmitting(true);
     try {
-      if (editing) { await updateStudent(editing._id, form); toast.success('Student updated'); }
-      else { await createStudent(form); toast.success('Student created'); }
+      let userId = form.user;
+
+      if (!editing && !useExistingUser) {
+        const regRes = await api.post('/auth/register', {
+          name: newUserName,
+          email: newUserEmail,
+          password: newUserPassword,
+          role: 'student',
+        });
+        userId = regRes.data.data.user.id;
+      }
+
+      const payload = { ...form, user: userId };
+
+      if (editing) {
+        await updateStudent(editing._id, payload);
+        toast.success('Student updated');
+      } else {
+        await createStudent(payload);
+        toast.success('Student created');
+      }
       setShowModal(false); fetchStudents();
-    } catch (err) { toast.error(err.response?.data?.message || 'Operation failed'); }
-    finally { setSubmitting(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Operation failed');
+    } finally { setSubmitting(false); }
   };
 
   const handleDelete = async (id) => {
@@ -150,21 +176,37 @@ export default function StudentsPage() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               {!editing && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1.5">Select User</label>
-                  <select
-                    value={form.user}
-                    onChange={(e) => setForm({ ...form, user: e.target.value })}
-                    required
-                    className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  >
-                    <option value="">-- Select a registered user --</option>
-                    {availableUsers.map((u) => (
-                      <option key={u._id || u.id} value={u._id || u.id}>
-                        {u.name} ({u.email})
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-500 mt-1">Only student-role users without profiles are shown</p>
+                  <div className="flex items-center gap-3 mb-3">
+                    <button type="button" onClick={() => setUseExistingUser(true)} className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${useExistingUser ? 'bg-blue-600/20 text-blue-400 border-blue-600/30' : 'bg-gray-800 text-gray-500 border-gray-700'}`}>Existing User</button>
+                    <button type="button" onClick={() => setUseExistingUser(false)} className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-all ${!useExistingUser ? 'bg-blue-600/20 text-blue-400 border-blue-600/30' : 'bg-gray-800 text-gray-500 border-gray-700'}`}>Create New</button>
+                  </div>
+
+                  {useExistingUser ? (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1.5">Select User</label>
+                      <select value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} required className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        <option value="">-- Select a registered user --</option>
+                        {availableUsers.map((u) => (
+                          <option key={u._id || u.id} value={u._id || u.id}>{u.name} ({u.email})</option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">Full Name</label>
+                        <input type="text" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} required={!useExistingUser} placeholder="John Doe" className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                        <input type="email" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} required={!useExistingUser} placeholder="john@uni.edu" className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                        <input type="password" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} required={!useExistingUser} minLength={6} placeholder="Min 6 chars" className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               <div>
