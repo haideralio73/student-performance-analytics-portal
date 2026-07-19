@@ -5,6 +5,8 @@
 import { useAuth } from '../hooks/useAuth';
 import { useFetch } from '../hooks/useFetch';
 import { IconAnalytics } from '../components/shared/Icons';
+import toast from 'react-hot-toast';
+import api from '../services/api';
 import GradeDistributionChart from '../components/analytics/GradeDistributionChart';
 import SubjectPerformanceChart from '../components/analytics/SubjectPerformanceChart';
 import AttendanceChart from '../components/analytics/AttendanceChart';
@@ -16,6 +18,18 @@ export default function AnalyticsPage() {
   const { data: attendance, loading: aLoad } = useFetch('/attendance');
   const gradeList = Array.isArray(grades) ? grades : [];
   const attList = Array.isArray(attendance) ? attendance : [];
+
+  const exportReport = async () => {
+    try {
+      const r = await api.get('/export/grades/csv', { responseType: 'blob' });
+      const u = window.URL.createObjectURL(new Blob([r.data]));
+      const l = document.createElement('a'); l.href = u;
+      l.setAttribute('download', `analytics-export-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(l); l.click(); l.remove();
+      window.URL.revokeObjectURL(u);
+      toast.success('Report downloaded');
+    } catch { toast.error('Export failed'); }
+  };
 
   return (
     <div className="space-y-8">
@@ -31,6 +45,7 @@ export default function AnalyticsPage() {
             {gLoad ? 'Loading data...' : `${gradeList.length} grades, ${attList.length} attendance records analyzed`}
           </p>
         </div>
+        <button onClick={exportReport} className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-all">Download Report</button>
       </div>
 
       {gLoad && aLoad ? (

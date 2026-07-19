@@ -35,6 +35,7 @@ const navGroups = {
     { to: '/users', label: 'Users', icon: IconUsers },
     { to: '/students', label: 'Students', icon: IconStudents },
     { to: '/grades', label: 'Grades', icon: IconGrades },
+    { to: '/attendance', label: 'Attendance', icon: IconAttendance },
     { to: '/analytics', label: 'Reports', icon: IconAnalytics },
   ],
 };
