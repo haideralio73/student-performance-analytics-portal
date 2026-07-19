@@ -1673,7 +1673,137 @@ All endpoints return errors in the standard envelope. Below is a consolidated re
 
 ---
 
-## 9. Quick Reference — Complete Endpoint List
+## 9. Search API (`/api/search`)
+
+### 9.1 Unified Search
+
+```
+GET /api/search
+```
+
+**Purpose:** Search across one or more collections with a single query.
+
+**Auth:** Authenticated
+
+**Query Parameters:**
+
+| Param | Type | Default | Notes |
+|---|---|---|---|
+| `q` | string | **required** | Min 2 characters, regex escaped |
+| `type` | string | all | Comma-separated: `students`, `users`, `grades`, `attendance` |
+| `page` | number | 1 | |
+| `limit` | number | 20 | Max 50 |
+
+**Success Response** `200 OK`:
+
+```json
+{
+  "success": true,
+  "query": "data",
+  "typesSearched": ["grades"],
+  "totalHits": 14,
+  "results": {
+    "grades": {
+      "data": [ ... ],
+      "total": 14,
+      "page": 1,
+      "limit": 20
+    }
+  }
+}
+```
+
+**Search fields per collection:**
+
+| Collection | Fields searched |
+|---|---|
+| `users` | `name`, `email` |
+| `students` | `studentId`, `programme` |
+| `grades` | `subject`, `assessmentName`, `term` |
+| `attendance` | `subject` |
+
+---
+
+## 10. Export API (`/api/export`)
+
+### 10.1 Export CSV
+
+```
+GET /api/export/:resource/csv
+```
+
+**Purpose:** Download filtered data as a CSV file.
+
+**Auth:** Authenticated
+
+**Supported resources:** `grades`, `attendance`, `students`, `users`
+
+**Accepts the same query filters as the corresponding list endpoint** (e.g. `?subject=X&dateFrom=Y` for grades).
+
+**Success Response** `200 OK`:
+
+- `Content-Type: text/csv`
+- `Content-Disposition: attachment; filename="grades-export-2026-07-19.csv"`
+- Body: CSV text with header row
+
+### 10.2 Export JSON
+
+```
+GET /api/export/:resource/json
+```
+
+**Purpose:** Download filtered data as JSON.
+
+**Auth:** Authenticated
+
+**Success Response** `200 OK`:
+
+```json
+{
+  "success": true,
+  "data": [ ... ],
+  "meta": { "total": 15 }
+}
+```
+
+---
+
+## 11. Enhanced Filtering
+
+All list endpoints (`/api/grades`, `/api/attendance`, `/api/users`, `/api/students`) support the following enhanced query parameters:
+
+| Feature | Example | Description |
+|---|---|---|
+| **Multi-value** | `?assessmentType=exam,quiz` | Filter by multiple comma-separated values |
+| **Date range** | `?dateFrom=2026-01-01&dateTo=2026-06-30` | Inclusive date range |
+| **Text search** | `?search=algebra` | Regex search within name/email/subject |
+| **Pagination** | `?page=1&limit=20&sort=-createdAt` | Page, limit, sort field |
+| **Role filter** | `?role=student` | Filter users by role |
+
+Standard response for all list endpoints:
+
+```json
+{
+  "success": true,
+  "data": [ ... ],
+  "meta": { "page": 1, "limit": 20, "total": 142, "pages": 8 }
+}
+```
+
+---
+
+## 12. Logging
+
+Winston logger configured with:
+- `logs/combined.log` — all requests with timestamps, methods, URLs, status codes, response times
+- `logs/error.log` — errors only with full stack traces
+- File rotation: 5MB max, 5 files retained
+- Console output in development mode
+- Unhandled promise rejection and uncaught exception capture
+
+---
+
+## 13. Quick Reference — Complete Endpoint List
 
 | Method | Route | Auth | Roles |
 |---|---|---|---|
@@ -1710,3 +1840,6 @@ All endpoints return errors in the standard envelope. Below is a consolidated re
 | GET | `/api/analytics/course/:courseId` | Bearer | All (scoped) |
 | GET | `/api/analytics/system` | Bearer | Admin |
 | GET | `/api/analytics/export` | Bearer | All (scoped) |
+| **GET** | **`/api/search?q=&type=`** | **Bearer** | **All** |
+| **GET** | **`/api/export/:resource/csv`** | **Bearer** | **All** |
+| **GET** | **`/api/export/:resource/json`** | **Bearer** | **All** |
