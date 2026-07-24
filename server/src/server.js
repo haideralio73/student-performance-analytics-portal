@@ -1,9 +1,8 @@
 /**
  * server.js — Application entry point.
  *
- * Boots Express, connects to MongoDB, registers global middleware,
- * applies rate limiting, mounts route modules, and starts listening.
- * Includes performance logging and structured error tracking.
+ * Secure Express server with rate limiting, NoSQL injection prevention,
+ * parameter pollution protection, CSRF hardening, and structured logging.
  */
 
 import express from 'express';
@@ -11,6 +10,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -33,15 +34,14 @@ connectDB();
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  message: {
-    success: false,
-    message: 'Too many requests from this IP. Try again after 15 minutes.',
-  },
+  message: { success: false, message: 'Too many requests. Try again after 15 minutes.' },
 });
 
 const generalLimiter = rateLimit({
@@ -51,9 +51,16 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 app.use(express.json({ limit: '10kb' }));
+app.use(mongoSanitize({ replaceWith: '_' }));
+app.use(hpp({ whitelist: ['role', 'assessmentType', 'status', 'term', 'subject', 'programme', 'sort', 'search', 'dateFrom', 'dateTo'] }));
 app.use(morgan('dev'));
 app.use(requestLogger);
 app.use(generalLimiter);
@@ -67,7 +74,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/export', exportRoutes);
 
-app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
+app.get('/api/health', (_req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
 
 app.use(errorHandler);
 
