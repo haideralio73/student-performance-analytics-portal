@@ -18,6 +18,9 @@ export const getGrades = async (req, res, next) => {
 
     if (req.user.role === 'student') {
       filter.student = req.query.student || req.user.id;
+    } else if (req.user.role === 'teacher') {
+      filter.recordedBy = req.user.id;
+      if (req.query.student) filter.student = req.query.student;
     } else {
       if (req.query.student) filter.student = req.query.student;
     }
