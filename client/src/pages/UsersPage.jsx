@@ -1,15 +1,19 @@
 /**
- * pages/UsersPage.jsx — User management (Admin only) with delete.
+ * pages/UsersPage.jsx — User management (Admin only) with add/delete.
  */
 
+import { useState } from 'react';
 import { useFetch } from '../hooks/useFetch';
-import { IconUsers, IconTrash } from '../components/shared/Icons';
+import { IconUsers, IconTrash, IconPlus, IconX } from '../components/shared/Icons';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 
 export default function UsersPage() {
   const { data, loading, refetch } = useFetch('/users');
   const users = Array.isArray(data) ? data : [];
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'student' });
+  const [submitting, setSubmitting] = useState(false);
 
   const exportCSV = async () => {
     try {
@@ -25,6 +29,18 @@ export default function UsersPage() {
     if (!window.confirm(`Delete user "${name}"? This cannot be undone.`)) return;
     try { await api.delete(`/users/${id}`); toast.success('User removed'); refetch(); }
     catch { toast.error('Delete failed'); }
+  };
+
+  const handleCreate = async (e) => {
+    e.preventDefault(); setSubmitting(true);
+    try {
+      await api.post('/auth/register', form);
+      toast.success('User created');
+      setShowModal(false); refetch();
+      setForm({ name: '', email: '', password: '', role: 'student' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed');
+    } finally { setSubmitting(false); }
   };
 
   const roleBadge = (role) => {
@@ -48,9 +64,12 @@ export default function UsersPage() {
             <p className="text-xs text-gray-500 mt-0.5">{users.length} registered users</p>
           </div>
         </div>
-        <button onClick={exportCSV} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-sm font-medium rounded-xl transition-all">
-          Export CSV
-        </button>
+        <div className="flex gap-2">
+          <button onClick={exportCSV} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-sm font-medium rounded-xl transition-all">Export CSV</button>
+          <button onClick={() => setShowModal(true)} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20">
+            <IconPlus className="w-4 h-4" /> Add User
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -104,6 +123,43 @@ export default function UsersPage() {
               {users.length === 0 && <tr><td colSpan={5} className="px-6 py-16 text-center text-gray-600 text-sm">No users registered yet.</td></tr>}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowModal(false)}>
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="px-6 py-5 border-b border-gray-800/50 flex items-center justify-between flex-shrink-0">
+              <h3 className="text-white font-semibold text-lg">Add User</h3>
+              <button onClick={() => setShowModal(false)} className="p-1.5 hover:bg-gray-800 rounded-lg text-gray-500 hover:text-white"><IconX className="w-5 h-5" /></button>
+            </div>
+            <form onSubmit={handleCreate} className="p-6 space-y-4 overflow-y-auto">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Full Name</label>
+                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="John Doe" className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required placeholder="john@uni.edu" className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
+                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} placeholder="Min 6 characters" className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Role</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['student', 'teacher', 'admin'].map((r) => (
+                    <button key={r} type="button" onClick={() => setForm({ ...form, role: r })} className={`py-2.5 rounded-xl text-sm font-medium border capitalize transition-all ${form.role === r ? 'bg-blue-600/20 border-blue-500 text-blue-400' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-gray-600'}`}>{r}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="submit" disabled={submitting} className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl text-sm">{submitting ? 'Creating...' : 'Create User'}</button>
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-medium rounded-xl text-sm border border-gray-700">Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
