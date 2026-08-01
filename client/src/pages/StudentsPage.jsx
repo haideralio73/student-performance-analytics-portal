@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 export default function StudentsPage() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
+  const canEdit = user?.role === 'admin' || user?.role === 'teacher';
   const [students, setStudents] = useState([]);
   const [availableUsers, setAvailableUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,7 +113,9 @@ export default function StudentsPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={async () => { try { const r = await api.get('/export/students/csv', { responseType: 'blob' }); const u = window.URL.createObjectURL(new Blob([r.data])); const l = document.createElement('a'); l.href = u; l.setAttribute('download', 'students.csv'); document.body.appendChild(l); l.click(); l.remove(); window.URL.revokeObjectURL(u); toast.success('CSV downloaded'); } catch { toast.error('Export failed'); } }} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-sm font-medium rounded-xl transition-all">Export CSV</button>
+          {canEdit && (
+            <button onClick={async () => { try { const r = await api.get('/export/students/csv', { responseType: 'blob' }); const u = window.URL.createObjectURL(new Blob([r.data])); const l = document.createElement('a'); l.href = u; l.setAttribute('download', 'students.csv'); document.body.appendChild(l); l.click(); l.remove(); window.URL.revokeObjectURL(u); toast.success('CSV downloaded'); } catch { toast.error('Export failed'); } }} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 text-sm font-medium rounded-xl transition-all">Export CSV</button>
+          )}
           {isAdmin && (
             <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/20">
               <IconPlus className="w-4 h-4" /> Add Student
@@ -139,7 +142,7 @@ export default function StudentsPage() {
                 <th className="text-left px-6 py-4 font-medium">Name</th>
                 <th className="text-left px-6 py-4 font-medium">Programme</th>
                 <th className="text-left px-6 py-4 font-medium">Year</th>
-                {isAdmin && <th className="text-right px-6 py-4 font-medium">Actions</th>}
+                {canEdit && <th className="text-right px-6 py-4 font-medium">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-800/30">
@@ -154,11 +157,11 @@ export default function StudentsPage() {
                   </td>
                   <td className="px-6 py-4 text-gray-400">{s.programme}</td>
                   <td className="px-6 py-4 text-gray-400">{s.enrollmentYear}</td>
-                  {isAdmin && (
+                  {canEdit && (
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button onClick={() => openEdit(s)} className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-500 hover:text-blue-400" title="Edit"><IconPencil className="w-4 h-4" /></button>
-                        <button onClick={() => handleDelete(s._id)} className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-500 hover:text-red-400" title="Delete"><IconTrash className="w-4 h-4" /></button>
+                        {isAdmin && <button onClick={() => handleDelete(s._id)} className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-500 hover:text-red-400" title="Delete"><IconTrash className="w-4 h-4" /></button>}
                       </div>
                     </td>
                   )}
