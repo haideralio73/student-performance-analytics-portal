@@ -12,7 +12,7 @@ export default function SettingsPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-4">
         <div className="w-11 h-11 rounded-xl bg-gray-800 flex items-center justify-center">
-          <IconSettings className="w-5.5 h-5.5 text-gray-400" />
+          <IconSettings className="w-5 h-5 text-gray-400" />
         </div>
         <div>
           <h2 className="text-xl font-bold text-white tracking-tight">Settings</h2>

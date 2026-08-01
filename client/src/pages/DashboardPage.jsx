@@ -114,12 +114,12 @@ function AdminDashboard() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {[
-          { to:'/grades', icon:IconGrades, color:'blue', label:'Grade Records', desc:'View all assessment results' },
-          { to:'/attendance', icon:IconAttendance, color:'emerald', label:'Attendance Records', desc:'Monitor attendance' },
-          { to:'/analytics', icon:IconAnalytics, color:'purple', label:'System Reports', desc:'Institution-wide analytics' },
+          { to:'/grades', icon:IconGrades, bg:'bg-blue-600/20', iconColor:'text-blue-400', label:'Grade Records', desc:'View all assessment results' },
+          { to:'/attendance', icon:IconAttendance, bg:'bg-emerald-600/20', iconColor:'text-emerald-400', label:'Attendance Records', desc:'Monitor attendance' },
+          { to:'/analytics', icon:IconAnalytics, bg:'bg-purple-600/20', iconColor:'text-purple-400', label:'System Reports', desc:'Institution-wide analytics' },
         ].map((c) => (
           <Link key={c.to} to={c.to} className="bg-gray-900 rounded-2xl border border-gray-800/80 p-6 hover:border-gray-700 transition-all group">
-            <div className={`w-10 h-10 rounded-xl bg-${c.color}-600/20 flex items-center justify-center mb-4`}><c.icon className="w-5 h-5 text-gray-400 group-hover:scale-110 transition-transform" /></div>
+            <div className={`w-10 h-10 rounded-xl ${c.bg} flex items-center justify-center mb-4`}><c.icon className={`w-5 h-5 ${c.iconColor} group-hover:scale-110 transition-transform`} /></div>
             <h3 className="text-white font-semibold text-sm">{c.label}</h3>
             <p className="text-gray-500 text-xs mt-1">{c.desc}</p>
           </Link>
