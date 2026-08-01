@@ -186,13 +186,20 @@ export default function StudentsPage() {
 
                   {useExistingUser ? (
                     <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1.5">Select User</label>
-                      <select value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} required className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                        <option value="">-- Select a registered user --</option>
-                        {availableUsers.map((u) => (
-                          <option key={u._id || u.id} value={u._id || u.id}>{u.name} ({u.email})</option>
-                        ))}
-                      </select>
+                    <label className="block text-sm font-medium text-gray-300 mb-1.5">Select User</label>
+                      <div className="relative">
+                        <select value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} required className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer">
+                          <option value="">-- Select a registered user --</option>
+                          {availableUsers.map((u) => (
+                            <option key={u._id || u.id} value={u._id || u.id}>{u.name} ({u.email})</option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-3">
