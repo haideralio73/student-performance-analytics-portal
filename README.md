@@ -1,34 +1,104 @@
 # Student Performance Analytics Portal
 
-A MERN stack platform for tracking and analyzing student academic performance.
+A full-stack MERN application for tracking and analyzing student academic performance across student, teacher, and admin roles.
 
-[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)](https://expressjs.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Status](https://img.shields.io/badge/status-planning-blue)](./CHANGELOG.md)
-
----
-
-## Problem Statement
-
-Educational institutions struggle with fragmented, paper-based systems for tracking student grades and attendance. Teachers lack real-time visibility into class performance; students have no centralized dashboard to monitor their academic progress; and administrators cannot easily identify at-risk students or generate institution-wide reports. SPAP solves this by providing a single, role-aware web platform where every stakeholder sees the right data at the right time.
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=node.js)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4-000000?logo=express)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248?logo=mongodb)](https://www.mongodb.com/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vitejs.dev/)
+[![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
+[![Status](https://img.shields.io/badge/status-complete-brightgreen)](./CHANGELOG.md)
 
 ---
 
 ## Documentation
 
-All planning and design documents live in the `docs/` directory:
-
 | Document | Description |
 |---|---|
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture, Mermaid diagrams, component breakdown, deployment targets |
-| [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | MongoDB collections, field specifications, indexes, ER diagram, sample documents |
-| [API_PLAN.md](docs/API_PLAN.md) | Full REST API reference — 34 endpoints, request/response shapes, error codes |
-| [USER_ROLES.md](docs/USER_ROLES.md) | Role-based access control, permissions matrix, route protection table |
-| [wireframes/](docs/wireframes/) | Low-fidelity HTML wireframes (6 screens, desktop + mobile) |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System architecture, Mermaid diagrams, deployment targets |
+| [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) | MongoDB collections, fields, indexes, ER diagram, sample documents |
+| [API_PLAN.md](docs/API_PLAN.md) | 40+ REST endpoints with request/response shapes and error codes |
+| [USER_ROLES.md](docs/USER_ROLES.md) | RBAC matrix, JWT design, route protection table |
+| [INTEGRATION.md](docs/INTEGRATION.md) | Full-stack data flow, component-to-API mapping |
+| [wireframes/](docs/wireframes/) | 6 HTML wireframes (desktop + mobile) |
+
+---
+
+## Quick Start
+
+### Prerequisites
+- Node.js 20+
+- MongoDB 7+
+- npm 10+
+
+### Install & Run
+
+```bash
+# Server
+cd server && npm install
+cp .env.example .env         # edit MONGO_URI and JWT_SECRET
+npm run dev
+
+# Client
+cd client && npm install
+cp .env.example .env         # edit VITE_API_URL if needed
+npm run dev
+```
+
+- API: `http://localhost:5000`
+- Client: `http://localhost:5173`
+
+### Demo Accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@portal.edu` | `admin123` |
+| Teacher | `sarah@portal.edu` | `teach123` |
+| Student | `ahmed@portal.edu` | `student123` |
+
+---
+
+## Database
+
+| Collection | Documents | Purpose |
+|---|---|---|
+| users | 24 | Auth + role management |
+| students | 7 | Student profiles with guardian info |
+| grades | 40 | Assessment results (exam, quiz, assignment, project) |
+| attendances | 60 | Daily attendance records |
+
+---
+
+## API Endpoints (40+)
+
+| Group | Endpoints |
+|---|---|
+| Auth | Register, Login, Refresh, Logout, GetMe |
+| Users | List (paginated/filtered), GetById, Update, Delete, Create |
+| Students | Create, List, GetById, Update, Delete |
+| Grades | Create, List (filtered/paginated), GetById, Update, Delete |
+| Attendance | Create, Bulk, List (filtered), Update |
+| Analytics | Student summary, Class overview |
+| Search | Unified search across 4 collections |
+| Export | CSV + JSON export for all resources |
+
+All list endpoints support: pagination (`page/limit/sort`), multi-value filters (`exam,quiz`), date ranges (`dateFrom/dateTo`), text search (`search=keyword`).
+
+---
+
+## Security
+
+| Layer | Implementation |
+|---|---|
+| Auth | JWT (7d expiry, bcrypt 12 rounds) |
+| RBAC | protect + authorize + scopedAccess middleware |
+| NoSQL injection | express-mongo-sanitize |
+| Parameter pollution | hpp with whitelist |
+| Rate limiting | 20/15min auth, 200/15min general |
+| Security headers | Helmet (CSP, HSTS, X-Frame-Options) |
+| Input validation | express-validator + Mongoose schema |
+| Logging | Winston (file rotation + console) |
 
 ---
 
@@ -36,108 +106,23 @@ All planning and design documents live in the `docs/` directory:
 
 ```
 codiora/
-│
-├── client/                          # React 18 SPA (Vite + Tailwind CSS)
-│   ├── src/
-│   │   ├── components/              # Organized by feature: analytics/, auth/, dashboard/, shared/
-│   │   ├── pages/                   # Route-level page components
-│   │   ├── hooks/                   # useAuth, useFetch
-│   │   ├── services/                # Axios-based API call wrappers (auth, grades, attendance, etc.)
-│   │   ├── context/                 # AuthContext — JWT state, login/logout/register
-│   │   ├── utils/                   # Constants, helpers, formatters
-│   │   ├── App.jsx                  # Route definitions + ProtectedRoute guard
-│   │   └── main.jsx                 # Entry point
-│   ├── package.json
-│   └── vite.config.js
-│
-├── server/                          # Node.js + Express REST API
-│   ├── src/
-│   │   ├── config/                  # db.js (MongoDB connection), env.js
-│   │   ├── models/                  # Mongoose schemas: User, Student, Grade, Attendance
-│   │   ├── controllers/             # Thin route handlers
-│   │   ├── routes/                  # Express routers per domain
-│   │   ├── middleware/               # Auth (JWT), Role (RBAC), Error handler
-│   │   ├── services/                # Business logic layer
-│   │   ├── utils/                   # Custom errors, constants
-│   │   └── server.js                # Entry point
-│   └── package.json
-│
-├── docs/                            # All planning and design documentation
-│   ├── ARCHITECTURE.md
-│   ├── DATABASE_SCHEMA.md
-│   ├── API_PLAN.md
-│   ├── USER_ROLES.md
-│   └── wireframes/
-│
-├── .env.example                     # Template for server environment variables
-├── .gitignore
-├── CONTRIBUTING.md
-├── CHANGELOG.md
-└── README.md                        # You are here
-```
-
----
-
-## Getting Started
-
-> **Current status:** Planning and design phase. Implementation begins after milestone approval.  
-> Sections marked `[ADD: once implementation begins]` will be populated with real values when the code is written.
-
-### Prerequisites
-
-- Node.js 20+
-- MongoDB 8+ (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
-- npm 10+
-
-### Clone & Install
-
-```bash
-git clone https://github.com/haideralio73/student-performance-analytics-portal.git
-cd student-performance-analytics-portal
-
-# Install server dependencies
-cd server
-npm install             # [ADD: once implementation begins]
-cd ..
-
-# Install client dependencies
-cd client
-npm install             # [ADD: once implementation begins]
-cd ..
-```
-
-### Environment Variables
-
-Copy the example env files and fill in your values:
-
-```bash
-cp server/.env.example server/.env   # [ADD: once implementation begins]
-cp client/.env.example client/.env   # [ADD: once implementation begins]
-```
-
-Required server variables: `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`.  
-Required client variables: `VITE_API_URL`.
-
-### Run Development Servers
-
-```bash
-# Terminal 1 — start the API
-cd server
-npm run dev             # [ADD: once implementation begins]
-
-# Terminal 2 — start the React app
-cd client
-npm run dev             # [ADD: once implementation begins]
-```
-
-- API: `http://localhost:5000`
-- Client: `http://localhost:5173`
-
-### Production Build
-
-```bash
-cd client
-npm run build           # [ADD: once implementation begins]
+├── client/                    # React 18 SPA (Vite + Tailwind)
+│   └── src/
+│       ├── components/        # analytics/, auth/, dashboard/, shared/
+│       ├── pages/             # 10 page components
+│       ├── hooks/             # useAuth, useFetch
+│       ├── services/          # Axios API wrappers
+│       ├── context/           # AuthContext (JWT state)
+│       └── utils/             # Constants, helpers
+├── server/                    # Express + Mongoose REST API
+│   └── src/
+│       ├── config/            # db.js, logger.js, env.js
+│       ├── models/            # User, Student, Grade, Attendance
+│       ├── controllers/       # 8 domain controllers
+│       ├── routes/            # 8 route modules
+│       ├── middleware/         # auth, role, validate, scopedAccess, errorHandler, performanceLogger
+│       └── utils/             # apiError, constants
+└── docs/                      # Architecture, Schema, API docs, Wireframes, Integration
 ```
 
 ---
@@ -146,33 +131,17 @@ npm run build           # [ADD: once implementation begins]
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | React 18, Vite 5, Tailwind CSS 3, Recharts, React Router 6 |
-| **Backend** | Node.js 20, Express 4, Mongoose 8, JWT, bcrypt |
-| **Database** | MongoDB 8 (Mongoose ODM) |
-| **Auth** | JWT (stateless), role-based access control |
-| **Tooling** | ESLint, Prettier, Nodemon |
-
----
-
-## Roadmap
-
-- [x] System architecture design
-- [x] Database schema design
-- [x] API endpoint planning (34 endpoints)
-- [x] User roles & permissions matrix
-- [x] Low-fidelity wireframes (6 screens, desktop + mobile)
-- [ ] Backend implementation (models, controllers, routes, middleware)
-- [ ] Frontend implementation (components, pages, data fetching)
-- [ ] Authentication & authorization wiring
-- [ ] Analytics dashboard implementation
-- [ ] Testing (unit + integration)
-- [ ] Deployment (Vercel + Render + MongoDB Atlas)
-
----
+| Frontend | React 18, Vite 5, Tailwind CSS 3, Recharts 2, React Router 6 |
+| Backend | Node.js 20, Express 4, Mongoose 8 |
+| Database | MongoDB 7 (Mongoose ODM) |
+| Auth | JWT, bcryptjs, RBAC middleware |
+| Security | Helmet, express-mongo-sanitize, hpp, rate-limit |
+| Logging | Winston, Morgan |
+| Charts | Recharts (Line, Bar, Pie, Donut) |
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for branch naming, commit conventions, and the PR process.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
