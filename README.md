@@ -46,8 +46,8 @@ cp .env.example .env         # edit VITE_API_URL if needed
 npm run dev
 ```
 
-- API: `http://localhost:5000`
-- Client: `http://localhost:5173`
+- API: `http://localhost:5002`
+- Client: `http://localhost:5175`
 
 ### Demo Accounts
 
