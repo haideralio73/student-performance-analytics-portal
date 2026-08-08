@@ -59,18 +59,14 @@ export const restrictStudentData = (req, _res, next) => {
 };
 
 /**
- * Verifies that a teacher owns the course specified in req.body.course.
- * Admins bypass this check. Must be used AFTER protect middleware.
+ * Verifies that a teacher owns the course if specified.
+ * Admins bypass this check. Skips if no courseId provided.
  */
 export const verifyTeacherCourse = async (req, _res, next) => {
   if (req.user.role === 'admin') return next();
 
   const courseId = req.body.course || req.params.courseId;
-  if (!courseId) {
-    return next(
-      Object.assign(new Error('Course ID is required'), { statusCode: 400 })
-    );
-  }
+  if (!courseId) return next();
 
   try {
     const course = await mongoose.connection.db.collection('courses').findOne({
